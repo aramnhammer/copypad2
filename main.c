@@ -10,6 +10,10 @@
 #include "src/clipboard.c"
 #include "src/errors.c"
 
+#ifdef __APPLE__
+#include "src/macos_hotkeys.h"
+#endif
+
 Color COLOR_LIGHT = {224, 215, 210, 255};
 Color COLOR_GREY = {150, 145, 148, 1};
 Color COLOR_ORANGE = {225, 138, 50, 255};
@@ -30,8 +34,11 @@ void HandleButtonClick(Clay_ElementId elementId, Clay_PointerData pointerInfo, i
 void ButtonComponent(Clay_String buttonText)
 {
     CLAY_AUTO_ID({.layout = {
+
+                      .sizing = {CLAY_SIZING_GROW(0)},
                       .padding = CLAY_PADDING_ALL(8)},
-                  .backgroundColor = COLOR_RED})
+                  .backgroundColor = COLOR_RED,
+                  .cornerRadius = CLAY_CORNER_RADIUS(4)})
     {
         Clay_OnHover(HandleButtonClick, (intptr_t)buttonText.chars);
         CLAY_TEXT(buttonText, CLAY_TEXT_CONFIG({.fontId = FONT_ID_BODY_16,
@@ -40,7 +47,32 @@ void ButtonComponent(Clay_String buttonText)
     }
 }
 
-Clay_RenderCommandArray createMainLayout(Item_Data *data, bool mouseOnText, const char *searchText, int cursorBlinkCounter)
+void HandleSettingsButtonClick(Clay_ElementId elementId, Clay_PointerData pointerInfo, intptr_t userData)
+{
+    if (pointerInfo.state == CLAY_POINTER_DATA_PRESSED_THIS_FRAME)
+    {
+        bool *settingsOpen = (bool *)userData;
+        *settingsOpen = !(*settingsOpen);
+    }
+}
+
+void SettingsButton(bool *settingsOpen)
+{
+    CLAY_AUTO_ID({.layout = {
+
+                      .sizing = {CLAY_SIZING_FIT(), CLAY_SIZING_FIT()},
+                      .padding = CLAY_PADDING_ALL(8)},
+                  .backgroundColor = COLOR_BLUE,
+                  .cornerRadius = CLAY_CORNER_RADIUS(4)})
+    {
+        Clay_OnHover(HandleSettingsButtonClick, (intptr_t)settingsOpen);
+        CLAY_TEXT(CLAY_STRING("Settings"), CLAY_TEXT_CONFIG({.fontId = FONT_ID_BODY_16,
+                                                             .fontSize = 16,
+                                                             .textColor = COLOR_WHITE}));
+    }
+}
+
+Clay_RenderCommandArray createMainLayout(Item_Data *data, bool mouseOnText, const char *searchText, int cursorBlinkCounter, bool *settingsOpen)
 {
     Clay_BeginLayout();
 
@@ -122,7 +154,8 @@ Clay_RenderCommandArray createMainLayout(Item_Data *data, bool mouseOnText, cons
                                               .childGap = 16,
                                               .layoutDirection = CLAY_TOP_TO_BOTTOM,
                                           },
-                                          .backgroundColor = {200, 200, 100, 255}})
+                                          .backgroundColor = {200, 200, 100, 255},
+                                          .cornerRadius = CLAY_CORNER_RADIUS(5)})
 
         {
             char itemCountText[50];
@@ -156,8 +189,49 @@ Clay_RenderCommandArray createMainLayout(Item_Data *data, bool mouseOnText, cons
                                             .textColor = {150, 0, 0, 255}}));
             }
         }
+        CLAY(CLAY_ID("settingsButtonContainer"), {.layout = {
+                                                      .sizing = {CLAY_SIZING_GROW(0), CLAY_SIZING_FIXED(20)},
+                                                      .childAlignment = {.x = CLAY_ALIGN_X_CENTER, .y = CLAY_ALIGN_Y_CENTER}}})
+        {
+
+            SettingsButton(settingsOpen);
+        }
     }
 
+    Clay_RenderCommandArray renderCommands = Clay_EndLayout();
+    return renderCommands;
+}
+
+void BackButton(bool *settingsOpen)
+{
+    CLAY_AUTO_ID({.layout = {
+
+                      .sizing = {CLAY_SIZING_FIT(), CLAY_SIZING_FIT()},
+                      .padding = CLAY_PADDING_ALL(8)},
+                  .backgroundColor = COLOR_BLUE,
+                  .cornerRadius = CLAY_CORNER_RADIUS(4)})
+    {
+        Clay_OnHover(HandleSettingsButtonClick, (intptr_t)settingsOpen);
+        CLAY_TEXT(CLAY_STRING("Back"), CLAY_TEXT_CONFIG({.fontId = FONT_ID_BODY_16,
+                                                         .fontSize = 16,
+                                                         .textColor = COLOR_WHITE}));
+    }
+}
+
+Clay_RenderCommandArray createSettingsPageLayout(bool *settingsOpen)
+{
+    Clay_BeginLayout();
+    CLAY_AUTO_ID({.layout = {
+                      .sizing = {CLAY_SIZING_GROW(0), CLAY_SIZING_GROW(0)},
+                      .padding = CLAY_PADDING_ALL(40),
+                      .childGap = 32,
+                      .layoutDirection = CLAY_TOP_TO_BOTTOM,
+                  }})
+    {
+        CLAY_TEXT(CLAY_STRING("Settings Page"),
+                  CLAY_TEXT_CONFIG({.fontId = FONT_ID_BODY_16, .fontSize = 24, .textColor = COLOR_BLACK}));
+        BackButton(settingsOpen);
+    }
     Clay_RenderCommandArray renderCommands = Clay_EndLayout();
     return renderCommands;
 }
@@ -196,6 +270,11 @@ int main(void)
     SetTargetFPS(60);
     SetExitKey(KEY_NULL);
     static bool wasMinimized = false;
+    static bool settingsOpen = false;
+
+#ifdef __APPLE__
+    RegisterGlobalHotkey();
+#endif
 
     while (!WindowShouldClose())
     {
@@ -235,7 +314,6 @@ int main(void)
                     letterCount++;
                 }
                 key = GetCharPressed();
-                printf("Key pressed: %lc\n", key);
             }
 
             if (IsKeyPressed(KEY_BACKSPACE) && letterCount > 0)
@@ -290,8 +368,14 @@ int main(void)
         // Render
         BeginDrawing();
         ClearBackground(COLOR_ORANGE);
-
-        Clay_Raylib_Render(createMainLayout(&itemData, mouseOnText, searchText, cursorBlinkCounter), fonts);
+        if (settingsOpen)
+        {
+            Clay_Raylib_Render(createSettingsPageLayout(&settingsOpen), fonts);
+        }
+        else
+        {
+            Clay_Raylib_Render(createMainLayout(&itemData, mouseOnText, searchText, cursorBlinkCounter, &settingsOpen), fonts);
+        }
         EndDrawing();
     }
 
@@ -310,9 +394,11 @@ int main(void)
         }
         free(itemArray.items);
     }
+#ifdef __APPLE__
+    UnregisterGlobalHotkey();
+#endif
     free(clayArena.memory);
     free(itemData.itemsArena.memory);
-    free(temp_render_buffer);
     UnloadFont(fonts[FONT_ID_BODY_16]);
 
     CloseWindow();
