@@ -282,6 +282,12 @@ int main(void)
 
     while (!WindowShouldClose())
     {
+        if (IsKeyDown(KEY_ESCAPE))
+        {
+            MinimizeWindow();
+            SetWindowHidden(); 
+        }
+
         letterCount = strlen(searchText);
 
         // Update window dimensions for Clay
