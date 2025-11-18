@@ -7,11 +7,20 @@
 static bool windowHidden = false;
 static EventHotKeyRef hotKeyRef;
 
+NSWindow *getWindow(void) {
+    NSArray *windows = [NSApp windows];
+    if (windows.count > 0) {
+        NSWindow *window = [windows objectAtIndex:0];
+        return window;
+    }
+    return nil;
+}
+
 OSStatus hotKeyHandler(EventHandlerCallRef nextHandler, EventRef theEvent, void *userData) {
     @autoreleasepool {
         NSArray *windows = [NSApp windows];
         if (windows.count > 0) {
-            NSWindow *window = [windows objectAtIndex:0];
+            NSWindow *window = getWindow();
             if (windowHidden) {
                 [window makeKeyAndOrderFront:nil];
                 [NSApp activateIgnoringOtherApps:YES];
@@ -50,5 +59,12 @@ void UnregisterGlobalHotkey(void) {
 bool IsAppHidden(void) {
     return windowHidden;
 }
+
+void SetWindowHidden() {
+    NSWindow *window = getWindow();
+    [window orderOut:nil];
+    windowHidden = true;
+}
+
 
 #endif
