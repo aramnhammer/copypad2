@@ -22,6 +22,9 @@ Clay_Color COLOR_RED = {168, 66, 28, 255};
 Clay_Color COLOR_BLACK = {0, 0, 0, 255};
 Clay_Color COLOR_BLUE = {100, 150, 255, 255};
 
+Color BACKGROUND_COLOR = {27, 2, 2, 1};
+Color ITEMBOX_BACKGROUND_COLOR = {27, 2, 2, 1};
+
 void HandleButtonClick(Clay_ElementId elementId, Clay_PointerData pointerInfo, intptr_t userData)
 {
     if (pointerInfo.state == CLAY_POINTER_DATA_PRESSED_THIS_FRAME)
@@ -85,7 +88,7 @@ Clay_RenderCommandArray createMainLayout(Item_Data *data, bool mouseOnText, cons
     {
         // Search Box
         CLAY(CLAY_ID("searchBox"), {.layout = {
-                                        .sizing = {CLAY_SIZING_GROW(0), CLAY_SIZING_FIXED(90)},
+                                        .sizing = {CLAY_SIZING_GROW(0), CLAY_SIZING_FIXED(80)},
                                         .padding = CLAY_PADDING_ALL(16),
                                         .childGap = 8,
                                         .layoutDirection = CLAY_TOP_TO_BOTTOM,
@@ -116,7 +119,10 @@ Clay_RenderCommandArray createMainLayout(Item_Data *data, bool mouseOnText, cons
                                               .sizing = {CLAY_SIZING_GROW(0), CLAY_SIZING_FIXED(40)},
                                               .padding = CLAY_PADDING_ALL(16),
                                           },
-                                          .backgroundColor = mouseOnText ? COLOR_BLUE : COLOR_WHITE})
+                                          .backgroundColor = mouseOnText ? COLOR_BLUE : COLOR_WHITE,
+                                          .cornerRadius = CLAY_CORNER_RADIUS(4)
+                                        }
+                                        )
             {
 
                 /// need to use a static buffer here to ensure the Clay_String chars pointer remains valid every frame
@@ -367,7 +373,7 @@ int main(void)
 
         // Render
         BeginDrawing();
-        ClearBackground(COLOR_ORANGE);
+        ClearBackground(BACKGROUND_COLOR);
         if (settingsOpen)
         {
             Clay_Raylib_Render(createSettingsPageLayout(&settingsOpen), fonts);
