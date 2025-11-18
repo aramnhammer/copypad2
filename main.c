@@ -22,8 +22,8 @@ Clay_Color COLOR_RED = {168, 66, 28, 255};
 Clay_Color COLOR_BLACK = {0, 0, 0, 255};
 Clay_Color COLOR_BLUE = {100, 150, 255, 255};
 
-Color BACKGROUND_COLOR = {27, 2, 2, 1};
-Color ITEMBOX_BACKGROUND_COLOR = {27, 2, 2, 1};
+Color BACKGROUND_COLOR = {122, 101, 99, 1};
+Clay_Color ITEMBOX_BACKGROUND_COLOR = {209, 209, 209, 255};
 
 void HandleButtonClick(Clay_ElementId elementId, Clay_PointerData pointerInfo, intptr_t userData)
 {
@@ -40,13 +40,13 @@ void ButtonComponent(Clay_String buttonText)
 
                       .sizing = {CLAY_SIZING_GROW(0)},
                       .padding = CLAY_PADDING_ALL(8)},
-                  .backgroundColor = COLOR_RED,
+                  .backgroundColor = ITEMBOX_BACKGROUND_COLOR,
                   .cornerRadius = CLAY_CORNER_RADIUS(4)})
     {
         Clay_OnHover(HandleButtonClick, (intptr_t)buttonText.chars);
         CLAY_TEXT(buttonText, CLAY_TEXT_CONFIG({.fontId = FONT_ID_BODY_16,
                                                 .fontSize = 24,
-                                                .textColor = COLOR_WHITE}));
+                                                .textColor = COLOR_BLACK}));
     }
 }
 
@@ -120,9 +120,7 @@ Clay_RenderCommandArray createMainLayout(Item_Data *data, bool mouseOnText, cons
                                               .padding = CLAY_PADDING_ALL(16),
                                           },
                                           .backgroundColor = mouseOnText ? COLOR_BLUE : COLOR_WHITE,
-                                          .cornerRadius = CLAY_CORNER_RADIUS(4)
-                                        }
-                                        )
+                                          .cornerRadius = CLAY_CORNER_RADIUS(4)})
             {
 
                 /// need to use a static buffer here to ensure the Clay_String chars pointer remains valid every frame
@@ -160,7 +158,7 @@ Clay_RenderCommandArray createMainLayout(Item_Data *data, bool mouseOnText, cons
                                               .childGap = 16,
                                               .layoutDirection = CLAY_TOP_TO_BOTTOM,
                                           },
-                                          .backgroundColor = {200, 200, 100, 255},
+                                          .backgroundColor = ITEMBOX_BACKGROUND_COLOR,
                                           .cornerRadius = CLAY_CORNER_RADIUS(5)})
 
         {
