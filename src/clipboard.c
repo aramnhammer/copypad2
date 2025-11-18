@@ -9,6 +9,7 @@ void insert_into_clipboard(const char *str);
 
 // FNV-1a hash function 
 uint64_t hash_buffer(const char *str) {
+    if (!str) return 0;
     uint64_t hash = 14695981039346656037ULL;
     while (*str) {
         hash ^= (unsigned char)(*str++);

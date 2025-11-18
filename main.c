@@ -23,7 +23,7 @@ Clay_Color COLOR_BLACK = {0, 0, 0, 255};
 Clay_Color COLOR_BLUE = {100, 150, 255, 255};
 
 Color BACKGROUND_COLOR = {122, 101, 99, 1};
-Clay_Color ITEMBOX_BACKGROUND_COLOR = {209, 209, 209, 255};
+Clay_Color ITEMBOX_BACKGROUND_COLOR = {209, 209, 209, 0};
 
 void HandleButtonClick(Clay_ElementId elementId, Clay_PointerData pointerInfo, intptr_t userData)
 {
@@ -335,6 +335,10 @@ int main(void)
         if (clipboardPollCounter % 30 == 0)
         {
             ClipboardData current_clipboard_data = poll_clipboard();
+            if (current_clipboard_data.hash == 0)
+            {
+                continue;
+            }
             bool isDuplicate = false;
             for (uint32_t i = 0; i < itemData.items->itemCount; i++)
             {
