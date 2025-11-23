@@ -7,5 +7,4 @@ void UnregisterGlobalHotkey(void);
 bool IsAppHidden(void);
 void SetWindowHidden(void);
 #endif
-
 #endif

@@ -1,7 +1,7 @@
 #define CLAY_IMPLEMENTATION
 #include "raylib.h"
-#include "../../lib/clay/clay.h"
-#include "../../lib/clay/renderers/raylib/clay_renderer_raylib.c"
+#include "clay.h"
+#include "renderers/raylib/clay_renderer_raylib.c"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,11 +11,11 @@
 #include "src/errors.c"
 
 #ifdef __APPLE__
-#include "src/macos_hotkeys.h"
+#include "src/macos/macos_hotkeys.h"
 #endif
 
 Color COLOR_LIGHT = {224, 215, 210, 255};
-Color COLOR_GREY = {150, 145, 148, 1};
+Color COLOR_GREY = {150, 145, 148, 0};
 Color COLOR_ORANGE = {225, 138, 50, 255};
 Clay_Color COLOR_WHITE = {255, 255, 255, 255};
 Clay_Color COLOR_RED = {168, 66, 28, 255};
@@ -285,7 +285,7 @@ int main(void)
         if (IsKeyDown(KEY_ESCAPE))
         {
             MinimizeWindow();
-            SetWindowHidden(); 
+            SetWindowHidden();
         }
 
         letterCount = strlen(searchText);

@@ -1,25 +1,27 @@
 .PHONY: all clean rebuild release
 
 BUILD_DIR = build
+RELEASE_DIR = $(BUILD_DIR)/release
+DEBUG_DIR = $(BUILD_DIR)/debug
 
-all: $(BUILD_DIR)
-	@cd $(BUILD_DIR) && cmake .. -DCMAKE_BUILD_TYPE=Debug || exit 1
-	@cd $(BUILD_DIR) && cmake --build . || exit 1
-	@echo "Build completed successfully!"
-	@cd $(BUILD_DIR) && ./copypad2
+all:
+	@mkdir -p $(DEBUG_DIR)
+	# -B sets the build dir, -S . sets the source to the current folder
+	@cmake -B $(DEBUG_DIR) -S . -DCMAKE_BUILD_TYPE=Debug
+	@cmake --build $(DEBUG_DIR)
+	@echo "Running Debug Build..."
+	@./$(DEBUG_DIR)/copypad2
 
-$(BUILD_DIR):
-	@mkdir -p $(BUILD_DIR)
+release:
+	@mkdir -p $(RELEASE_DIR)
+	# We turn off shared libs for static linking of dependencies
+	@cmake -B $(RELEASE_DIR) -S . -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF
+	@cmake --build $(RELEASE_DIR)
+	@echo "Release build completed!"
+	@otool -L $(RELEASE_DIR)/copypad2
 
 clean:
 	@rm -rf $(BUILD_DIR)
-	@echo "Build directory cleaned"
-
-release:
-	@mkdir -p $(BUILD_DIR)
-	@cd $(BUILD_DIR) && cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_STATIC=ON -DCMAKE_EXE_LINKER_FLAGS="-static" || exit 1
-	@cd $(BUILD_DIR) && cmake --build . || exit 1
-	@echo "Static build completed successfully!"
-	@cd $(BUILD_DIR) && otool -L ./copypad2
+	@echo "Cleaned build directory."
 
 rebuild: clean all

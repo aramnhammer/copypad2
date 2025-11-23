@@ -1,4 +1,6 @@
 #include "types.h"
+#include <stdlib.h>
+#include <string.h>
 
 /*
 FORWARD DECLARATIONS

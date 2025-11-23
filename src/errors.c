@@ -1,4 +1,5 @@
 #include "types.h"
+#include <stdio.h>
 
 void HandleClayErrors(Clay_ErrorData errorData);
 
