@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 3.27)
 project(copypad2 C)
-enable_language(OBJC)
 set(CMAKE_C_STANDARD 99)
-
-# Adding Raylib
+set(CMAKE_C_STANDARD_REQUIRED ON)
+if(APPLE)
+    enable_language(OBJC)
+endif()
 include(FetchContent)
 set(FETCHCONTENT_QUIET FALSE)
 set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -16,26 +17,36 @@ FetchContent_Declare(
     GIT_PROGRESS TRUE
     GIT_SHALLOW TRUE
 )
-
 FetchContent_MakeAvailable(raylib)
 
-add_executable(copypad2 main.c)
+FetchContent_Declare(
+    clay 
+    GIT_REPOSITORY "https://github.com/nicbarker/clay.git"
+    GIT_TAG "main"
+    GIT_PROGRESS TRUE
+    GIT_SHALLOW TRUE
+)
 
-target_compile_options(copypad2 PUBLIC)
-target_include_directories(copypad2 PUBLIC .)
-
-if(APPLE)
-    set_source_files_properties(src/macos_hotkeys.m PROPERTIES LANGUAGE OBJC)
-    target_sources(copypad2 PRIVATE src/macos_hotkeys.m)
-    target_link_libraries(copypad2 PUBLIC raylib "-framework AppKit" "-framework Carbon")
-else()
-    target_link_libraries(copypad2 PUBLIC raylib)
+FetchContent_GetProperties(clay)
+if(NOT clay_POPULATED) # created by FetchContent_GetPropertiesa
+    FetchContent_Populate(clay)
 endif()
 
-# Copy resources
+add_executable(copypad2 main.c)
+target_link_libraries(copypad2 PUBLIC raylib)
+target_include_directories(copypad2 PUBLIC 
+    .
+    ${clay_SOURCE_DIR}
+)
+if(APPLE)
+    target_sources(copypad2 PRIVATE src/macos/macos_hotkeys.m)
+    set_source_files_properties(src/macos_hotkeys.m PROPERTIES LANGUAGE OBJC)
+    target_link_libraries(copypad2 PUBLIC "-framework AppKit" "-framework Carbon")
+endif()
 add_custom_command(
     TARGET copypad2 POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     ${CMAKE_CURRENT_SOURCE_DIR}/resources
     ${CMAKE_CURRENT_BINARY_DIR}/resources
+    COMMENT "Copying resources..."
 )
