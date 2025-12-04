@@ -40,7 +40,7 @@ void ButtonComponent(Clay_String buttonText)
 
                       .sizing = {CLAY_SIZING_GROW(0)},
                       .padding = CLAY_PADDING_ALL(8)},
-                  .backgroundColor = ITEMBOX_BACKGROUND_COLOR,
+                  .backgroundColor = Clay_Hovered() ? COLOR_BLUE : COLOR_WHITE,
                   .cornerRadius = CLAY_CORNER_RADIUS(4)})
     {
         Clay_OnHover(HandleButtonClick, (void*)buttonText.chars);
@@ -119,7 +119,7 @@ Clay_RenderCommandArray createMainLayout(Item_Data *data, bool mouseOnText, cons
                                               .sizing = {CLAY_SIZING_GROW(0), CLAY_SIZING_FIXED(40)},
                                               .padding = CLAY_PADDING_ALL(16),
                                           },
-                                          .backgroundColor = mouseOnText ? COLOR_BLUE : COLOR_WHITE,
+                                          .backgroundColor = Clay_Hovered() ? COLOR_BLUE : COLOR_WHITE,
                                           .cornerRadius = CLAY_CORNER_RADIUS(4)})
             {
 
