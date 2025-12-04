@@ -25,7 +25,7 @@ Clay_Color COLOR_BLUE = {100, 150, 255, 255};
 Color BACKGROUND_COLOR = {122, 101, 99, 1};
 Clay_Color ITEMBOX_BACKGROUND_COLOR = {209, 209, 209, 0};
 
-void HandleButtonClick(Clay_ElementId elementId, Clay_PointerData pointerInfo, intptr_t userData)
+void HandleButtonClick(Clay_ElementId elementId, Clay_PointerData pointerInfo, void *userData)
 {
     if (pointerInfo.state == CLAY_POINTER_DATA_PRESSED_THIS_FRAME)
     {
@@ -43,14 +43,14 @@ void ButtonComponent(Clay_String buttonText)
                   .backgroundColor = ITEMBOX_BACKGROUND_COLOR,
                   .cornerRadius = CLAY_CORNER_RADIUS(4)})
     {
-        Clay_OnHover(HandleButtonClick, (intptr_t)buttonText.chars);
+        Clay_OnHover(HandleButtonClick, (void*)buttonText.chars);
         CLAY_TEXT(buttonText, CLAY_TEXT_CONFIG({.fontId = FONT_ID_BODY_16,
                                                 .fontSize = 24,
                                                 .textColor = COLOR_BLACK}));
     }
 }
 
-void HandleSettingsButtonClick(Clay_ElementId elementId, Clay_PointerData pointerInfo, intptr_t userData)
+void HandleSettingsButtonClick(Clay_ElementId elementId, Clay_PointerData pointerInfo, void *userData)
 {
     if (pointerInfo.state == CLAY_POINTER_DATA_PRESSED_THIS_FRAME)
     {
@@ -68,7 +68,7 @@ void SettingsButton(bool *settingsOpen)
                   .backgroundColor = COLOR_BLUE,
                   .cornerRadius = CLAY_CORNER_RADIUS(4)})
     {
-        Clay_OnHover(HandleSettingsButtonClick, (intptr_t)settingsOpen);
+        Clay_OnHover(HandleSettingsButtonClick, (void *)settingsOpen);
         CLAY_TEXT(CLAY_STRING("Settings"), CLAY_TEXT_CONFIG({.fontId = FONT_ID_BODY_16,
                                                              .fontSize = 16,
                                                              .textColor = COLOR_WHITE}));
@@ -215,7 +215,7 @@ void BackButton(bool *settingsOpen)
                   .backgroundColor = COLOR_BLUE,
                   .cornerRadius = CLAY_CORNER_RADIUS(4)})
     {
-        Clay_OnHover(HandleSettingsButtonClick, (intptr_t)settingsOpen);
+        Clay_OnHover(HandleSettingsButtonClick, (void*)settingsOpen);
         CLAY_TEXT(CLAY_STRING("Back"), CLAY_TEXT_CONFIG({.fontId = FONT_ID_BODY_16,
                                                          .fontSize = 16,
                                                          .textColor = COLOR_WHITE}));
