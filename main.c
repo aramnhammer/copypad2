@@ -202,7 +202,7 @@ Clay_RenderCommandArray createMainLayout(Item_Data *data, bool mouseOnText, cons
         }
     }
 
-    Clay_RenderCommandArray renderCommands = Clay_EndLayout();
+    Clay_RenderCommandArray renderCommands = Clay_EndLayout(GetFrameTime());
     return renderCommands;
 }
 
@@ -236,7 +236,7 @@ Clay_RenderCommandArray createSettingsPageLayout(bool *settingsOpen)
                   CLAY_TEXT_CONFIG({.fontId = FONT_ID_BODY_16, .fontSize = 24, .textColor = COLOR_BLACK}));
         BackButton(settingsOpen);
     }
-    Clay_RenderCommandArray renderCommands = Clay_EndLayout();
+    Clay_RenderCommandArray renderCommands = Clay_EndLayout(GetFrameTime());
     return renderCommands;
 }
 
